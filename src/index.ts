@@ -1,31 +1,61 @@
-import p5 from "p5";
+import p5 from 'p5';
 
 let bunnyImage: p5.Image;
 const p = new p5((sketch) => {
-    sketch.setup = setup;
-    sketch.preload = preload;
-    sketch.draw = draw;
+  sketch.setup = setup;
+  sketch.preload = preload;
+  sketch.draw = draw;
 });
-const rows = 2
-const colums = 2
-
+const rows = 5;
+const colums = 5;
+let imagewidth = 0;
+let imageheight = 0;
+let position:number[][] = []
 function setup() {
-    p.createCanvas(500, 500);
-}
-function preload(){
-    bunnyImage = p.loadImage("assets/bunny.png")
-}
-function draw(){
-    const imagewidth = p.width/colums
-    const imageheight = p.height/rows
-    p.background("white")
-    p.stroke("white")
-    p.noFill();
-    p.strokeWeight(2)
-    for(let y =0 ; y<colums;y++){
-        for(let x = 0; x<rows;x++){
-            p.image(bunnyImage,x*imagewidth,y*imageheight,imagewidth,imageheight,x*imagewidth,y*imageheight,imagewidth,imageheight)
-            p.rect(x*imagewidth,y*imageheight,imagewidth,imageheight)
-        }
+  p.createCanvas(500, 500);
+  imagewidth = p.width / colums;
+  imageheight = p.height / rows;
+  for(let i = 0; i<rows*colums;i++){
+    let newX = findRandomX()
+    let newY = findRandomY()
+    while(checkIfAlreadyUsed(newX,newY)){
+      newX = findRandomX()
+      newY = findRandomY()
     }
+    position.push([newX, newY]);
+  }
+}
+function preload() {
+  bunnyImage = p.loadImage('assets/bunny.png');
+}
+function draw() {
+  p.background('white');
+  p.stroke('white');
+  p.noFill();
+  p.strokeWeight(2);
+  let index = 0
+  for (let y = 0; y < colums; y++) {
+    for (let x = 0; x < rows; x++) {
+      const sx = position[index][0]
+      const sy = position[index][1]
+      p.image(bunnyImage, x * imagewidth, y * imageheight, imagewidth, imageheight, sx,sy, imagewidth, imageheight);
+      p.rect(x * imagewidth, y * imageheight, imagewidth, imageheight);
+      index++
+    }
+  }
+}
+ function findRandomX(){
+ return Math.floor(p.random(0,rows)) * imagewidth
+
+}
+function findRandomY(){
+return Math.floor(p.random(0,colums)) * imageheight
+}
+function checkIfAlreadyUsed(x:number,y:number){
+for(let i = 0; i<position.length;i++){
+  if(position[i][0] === x&&position[i][1]===y){
+    return true
+  }
+}
+return false;
 }

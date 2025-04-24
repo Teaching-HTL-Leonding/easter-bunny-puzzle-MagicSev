@@ -1,57 +1,50 @@
-import p5 from 'p5';
+import p5 from "p5";
+const TILES = 5;
+const TILESIZE = 500/TILES
+let bunnyimage:p5.Image;
+let randomtileY: number[][] =[]
+let randomtileX: number[][] =[]
 
-let bunnyImage: p5.Image;
 const p = new p5((sketch) => {
-  sketch.setup = setup;
-  sketch.preload = preload;
-  sketch.draw = draw;
+    sketch.setup = setup;
+    sketch.draw = draw;
+    sketch.preload = preload
 });
-const rows = 5;
-const colums = 5;
-let imagewidth = 0;
-let imageheight = 0;
-let position: number[][] = [];
+
 function setup() {
-  p.createCanvas(500, 500);
-  imagewidth = p.width / colums;
-  imageheight = p.height / rows;
-  for (let i = 0; i < rows * colums; i++) {
-    let newX = findRandomPos(0, rows, imagewidth);
-    let newY = findRandomPos(0, colums, imageheight);
-    while (checkIfAlreadyUsed(newX, newY)) {
-      newX = findRandomPos(0, rows, imagewidth);
-      newY = findRandomPos(0, colums, imageheight);
+    p.createCanvas(500, 500);
+    p.background("red");
+    
+    for(let x = 0;x < TILES; x++){
+        randomtileX[x] = []
+        randomtileY[x] = []
+        for(let y = 0; y <TILES; y++){
+           randomtileX[x][y] = Math.floor(p.random(TILES))*TILESIZE
+           randomtileY[x][y] = Math.floor(p.random(TILES))*TILESIZE
+
+           
     }
-    position.push([newX, newY]);
-  }
 }
-function preload() {
-  bunnyImage = p.loadImage('assets/bunny.png');
+
+
 }
-function draw() {
-  p.background('white');
-  p.stroke('white');
-  p.noFill();
-  p.strokeWeight(2);
-  let index = 0;
-  for (let y = 0; y < colums; y++) {
-    for (let x = 0; x < rows; x++) {
-      const sx = position[index][0];
-      const sy = position[index][1];
-      p.image(bunnyImage, x * imagewidth, y * imageheight, imagewidth, imageheight, sx, sy, imagewidth, imageheight);
-      p.rect(x * imagewidth, y * imageheight, imagewidth, imageheight);
-      index++;
+function draw(){
+    p.noFill()
+    p.stroke("white")
+    p.strokeWeight(2)
+
+for(let x = 0;x < TILES; x++){
+    for(let y = 0; y <TILES; y++){
+        if(x!==TILES-1||y!==TILES-1){
+            const imageX = x*500/TILES
+            const imageY = y*500/TILES
+            p.image(bunnyimage,imageX,imageY,TILESIZE,TILESIZE,randomtileX[x][y],randomtileY[x][y],TILESIZE,TILESIZE)
+            p.rect(imageX,imageY,TILESIZE,TILESIZE)
+
+        }
     }
-  }
 }
-function checkIfAlreadyUsed(x: number, y: number): boolean {
-  for (let i = 0; i < position.length; i++) {
-    if (position[i][0] === x && position[i][1] === y) {
-      return true;
-    }
-  }
-  return false;
 }
-function findRandomPos(min: number, max: number, margin: number): number {
-  return Math.floor(p.random(min, max)) * margin;
+function preload(){
+    bunnyimage = p.loadImage('assets/bunny.png')
 }
